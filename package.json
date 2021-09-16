@@ -8,10 +8,26 @@
     "src",
     "dist"
   ],
+  "author": {
+    "name": "Song Mingxu",
+    "email": "song.mingxu@foxmail.com"
+  },
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "rollup -c",
+    "pub": "npm run build && npm publish",
     "lint": "vue-cli-service lint"
+  },
+  "keywords": [
+    "question",
+    "vue",
+    "vue2",
+    "element-ui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeMxself/questions-editor.git"
   },
   "dependencies": {},
   "peerDependencies": {
