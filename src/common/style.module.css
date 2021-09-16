@@ -1,0 +1,15 @@
+.options,
+.ranges {
+  width: 100%;
+}
+.options td,
+.ranges td,
+.options th,
+.ranges th {
+  text-align: center;
+  padding: 8px 0;
+}
+.options tr:not(:last-of-type) td,
+.ranges tr:not(:last-of-type) td {
+  border-bottom: 1px solid #eee;
+}
