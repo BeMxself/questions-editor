@@ -1,5 +1,5 @@
 <template>
-  <question-frame v-model="localValue">
+  <question-frame :readonly="readonly" v-model="localValue">
     <table :class="$style.ranges">
       <thead>
         <tr>
@@ -10,15 +10,20 @@
         </tr>
       </thead>
       <tbody ref="optionsContainer">
-        <tr :key="index" v-for="(item, index) in localValue.options">
+        <tr
+          :class="{'ignore-sort': readonly}"
+          :key="index"
+          v-for="(item, index) in localValue.options"
+        >
           <td>
             <el-tag class="sort-handle" size="small" type="info">:::</el-tag>
           </td>
           <td>
-            <expression-editor v-model="item.range" />
+            <expression-editor :readonly="readonly" v-model="item.range" />
           </td>
           <td>
             <el-input-number
+              :readonly="readonly"
               controls-position="right"
               size="small"
               style="width:100px"
@@ -75,9 +80,16 @@ export default {
       updateDataArray: 'localValue.options',
     }),
   ],
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: { ExpressionEditor, QuestionFrame },
   methods: {
     handleAddRange(index) {
+      if (this.readonly) return
       this.localValue.options.splice(
         index + 1,
         0,
@@ -85,6 +97,7 @@ export default {
       )
     },
     handleRemoveRange(index) {
+      if (this.readonly) return
       this.localValue.options.splice(index, 1)
     },
   },

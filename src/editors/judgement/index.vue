@@ -1,5 +1,5 @@
 <template>
-  <question-frame v-model="localValue">
+  <question-frame :readonly="readonly" v-model="localValue">
     <table :class="$style.options">
       <thead>
         <tr>
@@ -55,6 +55,9 @@ export default {
       needReset: (v) => !(v && v.options && v.options.length === 2),
     }),
   ],
+  props: {
+    readonly: { type: Boolean, default: false },
+  },
   components: {
     QuestionFrame,
   },

@@ -11,7 +11,14 @@ export default {
       updateDataArray: 'localValue',
     }),
   ],
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
+    // 标准化问题定义数据（清理不必要的属性，补齐缺少的必填属性）
     normalizeQuestion(q, define) {
       if (define.isContainer && !q.children) Vue.set(q, 'children', [])
       // 清理不必要的属性
@@ -28,8 +35,11 @@ export default {
         .filter((k) => !keepProps.includes(k))
         .forEach((key) => delete q[key])
     },
+
+    // 渲染wrapper的操作区（左边的类型选择框，右边的排序删除按钮等）
     renderOperations(q, h, context) {
       return [
+        // 类型选择框
         h(
           'el-select',
           {
@@ -37,7 +47,7 @@ export default {
             props: { value: q.type, size: 'mini' },
             style: { width: '120px' },
             on: {
-              change: (value) => (q.type = value),
+              change: (value) => !this.readonly && (q.type = value),
             },
           },
           EditorDefines.map(({ name, displayName }) =>
@@ -50,6 +60,8 @@ export default {
             })
           )
         ),
+
+        // 右侧排序按钮
         h('el-button-group', { slot: 'operations-right' }, [
           h('el-button', {
             props: {
@@ -59,6 +71,7 @@ export default {
             },
             on: {
               click() {
+                if (this.readonly) return
                 const item = context.brothers.splice(context.index, 1)[0]
                 context.brothers.splice(context.index - 1, 0, item)
               },
@@ -72,19 +85,23 @@ export default {
             },
             on: {
               click() {
+                if (this.readonly) return
                 const item = context.brothers.splice(context.index, 1)[0]
                 context.brothers.splice(context.index + 1, 0, item)
               },
             },
           }),
         ]),
+
+        // 删除按钮
         h(
           'el-popconfirm',
           {
             props: { title: '确定要删除吗？' },
             slot: 'operations-right',
             on: {
-              confirm: () => context.brothers.splice(context.index, 1),
+              confirm: () =>
+                !this.readonly && context.brothers.splice(context.index, 1),
             },
           },
           [
@@ -97,32 +114,41 @@ export default {
         ),
       ]
     },
+
+    // 渲染多个问题
     renderQuestion(q, h, context) {
       const { type, ...props } = q
       const define = getEditorDefine(type)
       if (!define) return h('div', null, [`${type}不是有效的问题类型`])
       this.normalizeQuestion(q, define)
-      return h(EditorWrapper, { props: { value: props } }, [
-        h(
-          define.editorComponent,
-          {
-            props: { value: props, context },
-            on: {
-              input: (v) => {
-                Object.assign(q, v)
+      return h(
+        EditorWrapper,
+        {
+          class: this.readonly ? 'ignore-sort' : '',
+          props: { value: props, readonly: this.readonly },
+        },
+        [
+          h(
+            define.editorComponent,
+            {
+              props: { value: props, readonly: this.readonly, context },
+              on: {
+                input: (v) => !this.readonly && Object.assign(q, v),
               },
             },
-          },
-          [
-            define.isContainer
-              ? this.renderQuestions(props.children, h, { parent: q })
-              : null,
-            this.renderAddButton(q, h),
-          ]
-        ),
-        ...this.renderOperations(q, h, context),
-      ])
+            [
+              define.isContainer
+                ? this.renderQuestions(props.children, h, { parent: q })
+                : null,
+              this.renderAddButton(q, h),
+            ]
+          ),
+          ...this.renderOperations(q, h, context),
+        ]
+      )
     },
+
+    // 渲染添加按钮
     renderAddButton(q, h) {
       return h(
         'div',
@@ -136,30 +162,38 @@ export default {
               plain: true,
             },
             on: {
-              click: () => q.children.push({ type: 'MultipleChoice' }),
+              click: () =>
+                !this.readonly && q.children.push({ type: 'MultipleChoice' }),
             },
           }),
         ]
       )
     },
+
+    // 渲染多个问题
     renderQuestions(questions, h, context) {
       if (!questions) return null
-      return [
-        ...questions.map((q, index) =>
-          this.renderQuestion(q, h, {
-            brothers: questions,
-            index,
-            parent: context && context.parent,
-            isRoot: !context,
-          })
-        ),
-      ]
+      return questions.map((q, index) =>
+        this.renderQuestion(q, h, {
+          brothers: questions,
+          index,
+          parent: context && context.parent,
+          isRoot: !context,
+        })
+      )
     },
   },
   render(h) {
-    return h('div', { class: 'questions', ref: 'questionsContainer' }, [
-      ...this.renderQuestions(this.localValue, h),
-      this.renderAddButton({ children: this.localValue, isRoot: true }, h),
-    ])
+    return h(
+      'div',
+      {
+        class: 'questions',
+        ref: 'questionsContainer',
+      },
+      [
+        ...this.renderQuestions(this.localValue, h),
+        this.renderAddButton({ children: this.localValue, isRoot: true }, h),
+      ]
+    )
   },
 }

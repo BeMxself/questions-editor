@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-select
+      :disabled="readonly"
       :value="expressions[0].operator"
       @input="handle1stOperatorInput"
       placeholder
@@ -21,6 +22,7 @@
     />
 
     <el-select
+      :disabled="readonly"
       :value="expressions[1].operator"
       @input="handle2ndOperatorInput"
       placeholder
@@ -47,6 +49,12 @@ const operatorOrder = ['=', '>', '>=', '<', '<=']
 
 export default {
   mixins: [LocalValueBindingMixin({ default: () => ({}) })],
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       expressions: [

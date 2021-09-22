@@ -12,6 +12,12 @@ export default {
       needReset: (v) => !(v && v.type),
     }),
   ],
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     normalizeQuestion(q, define) {
       if (define.isContainer && !q.children) Vue.set(q, 'children', [])
@@ -38,7 +44,7 @@ export default {
             props: { value: q.type, size: 'mini' },
             style: { width: '120px' },
             on: {
-              change: (value) => (q.type = value),
+              change: (value) => !this.readonly && (q.type = value),
             },
           },
           EditorDefines.filter((d) => !d.isContainer).map(
@@ -62,14 +68,20 @@ export default {
       this.normalizeQuestion(q, define)
       return h(
         EditorWrapper,
-        { props: { value: props, toggleButton: false, dragHandle: false } },
+        {
+          props: {
+            value: props,
+            toggleButton: false,
+            dragHandle: false,
+          },
+        },
         [
           h(
             define.editorComponent,
             {
-              props: { value: props, context },
+              props: { value: props, context, readonly: this.readonly },
               on: {
-                input: (v) => Object.assign(q, v),
+                input: (v) => !this.readonly && Object.assign(q, v),
               },
             },
             null

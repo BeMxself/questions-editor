@@ -3,9 +3,9 @@
     <h2>多题编辑器</h2>
     <questions-editor v-model="questions" />
     <h2>单题编辑器</h2>
-    <question-editor v-model="question" />
+    <question-editor :readonly="true" v-model="question" />
     <h2>量表编辑器</h2>
-    <scale-table v-model="scaleTable" />
+    <scale-table :readonly="true" v-model="scaleTable" />
   </div>
 </template>
 

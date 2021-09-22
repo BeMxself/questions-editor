@@ -10,12 +10,12 @@
         </tr>
       </thead>
       <tbody ref="levels">
-        <tr :key="index" v-for="(item, index) in localValue">
+        <tr :class="{'ignore-sort': readonly}" :key="index" v-for="(item, index) in localValue">
           <td>
             <el-tag class="sort-handle" size="small" type="info">:::</el-tag>
           </td>
           <td>
-            <expression-editor v-model="item.range" />
+            <expression-editor :readonly="readonly" v-model="item.range" />
           </td>
           <td>
             <el-input size="mini" v-model="item.level" />
@@ -61,17 +61,31 @@ export default {
     }),
     SortableMixin({ refName: 'levels', updateDataArray: 'localValue' }),
   ],
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     ExpressionEditor,
   },
   methods: {
     handleAddLevel(index) {
+      if (this.readonly) return
       this.localValue.splice(index + 1, 0, cloneDeep(LevelDefault))
     },
     handleRemoveLevel(index) {
+      if (this.readonly) return
       this.localValue.splice(index, 1)
     },
   },
 }
 </script>
 <style src="../common/style.module.css" module></style>
+<style scoped>
+.sort-handle {
+  cursor: move;
+  cursor: -webkit-grabbing;
+}
+</style>

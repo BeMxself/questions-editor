@@ -9,7 +9,7 @@
           type="text"
           v-if="toggleButton"
         ></el-button>
-        <el-tag class="question-sort-handle" size="small" type="info" v-if="dragHandle">:::</el-tag>
+        <el-tag class="sort-handle" size="small" type="info" v-if="dragHandle">:::</el-tag>
         <slot name="operations-left" />
       </div>
       <div v-if="!expanded">{{value.topic || '[空]'}}</div>
@@ -30,6 +30,7 @@ export default {
     value: { type: Object, default: () => ({}) },
     toggleButton: { type: Boolean, default: true },
     dragHandle: { type: Boolean, default: true },
+    isSynced: { type: Boolean, default: true },
   },
   data() {
     return {
@@ -55,7 +56,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.editor-wrapper > .operate-panel .question-sort-handle {
+.editor-wrapper > .operate-panel .sort-handle {
   cursor: move;
   cursor: -webkit-grabbing;
   margin: 0 10px;

@@ -30,10 +30,13 @@ export default function getMixin(config) {
       this[sortableVar] = Sortable.create(el, {
         sort: true,
         animation: 150,
+        filter: '.ignore-sort',
+        handle: '.sort-handle',
         onEnd: (args) => updateDataArrayFn.call(this, args),
       })
     },
     destroyed() {
+      if (this.readonly) return
       this[sortableVar].destroy()
     },
   }

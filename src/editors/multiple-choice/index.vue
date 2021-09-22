@@ -1,5 +1,5 @@
 <template>
-  <question-frame v-model="localValue">
+  <question-frame :readonly="readonly" v-model="localValue">
     <table :class="$style.options">
       <thead>
         <tr>
@@ -10,15 +10,20 @@
         </tr>
       </thead>
       <tbody ref="optionsContainer">
-        <tr :key="item.__id" v-for="(item, index) in localValue.options">
+        <tr
+          :class="{'ignore-sort': readonly}"
+          :key="item.__id"
+          v-for="(item, index) in localValue.options"
+        >
           <td>
             <el-tag class="sort-handle" size="small" type="info">:::</el-tag>
           </td>
           <td>
-            <el-input size="small" v-model="item.content" />
+            <el-input :readonly="readonly" size="small" v-model="item.content" />
           </td>
           <td>
             <el-input-number
+              :readonly="readonly"
               controls-position="right"
               size="small"
               style="width:100px"
@@ -74,11 +79,15 @@ export default {
       updateDataArray: 'localValue.options',
     }),
   ],
+  props: {
+    readonly: { type: Boolean, default: false },
+  },
   components: {
     QuestionFrame,
   },
   methods: {
     handleAddOption(index) {
+      if (this.readonly) return
       this.localValue.options.splice(
         index + 1,
         0,
@@ -86,6 +95,7 @@ export default {
       )
     },
     handleRemoveOption(index) {
+      if (this.readonly) return
       this.localValue.options.splice(index, 1)
     },
   },
@@ -96,8 +106,5 @@ export default {
 .sort-handle {
   cursor: move;
   cursor: -webkit-grabbing;
-}
-.sort-item-ghost td {
-  background: rgba(135, 207, 235, 0.2);
 }
 </style>

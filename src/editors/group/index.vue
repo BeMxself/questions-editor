@@ -9,7 +9,7 @@
           <el-input size="mini" v-model="localValue.topic" />
         </el-descriptions-item>
         <el-descriptions-item contentStyle="width: 120px" label="记分方式">
-          <el-select size="mini" v-model="localValue.scoreType">
+          <el-select :disabled="readonly" size="mini" v-model="localValue.scoreType">
             <el-option label="累加" value="sum" />
             <el-option label="最大" value="max" />
             <el-option label="最小" value="min" />
@@ -39,6 +39,9 @@ const defaultProps = {
 }
 
 export default {
+  props: {
+    readonly: { type: Boolean, default: false },
+  },
   mixins: [
     LocalValueBindingMixin({
       default: () => cloneDeep(defaultProps),

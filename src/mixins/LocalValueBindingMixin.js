@@ -1,3 +1,6 @@
+import isEqual from '@/utils/isEqual'
+import cloneDeep from '@/utils/cloneDeep'
+
 export default function getMixin(config) {
   const {
     default: defaultFn = () => ({}),
@@ -16,10 +19,20 @@ export default function getMixin(config) {
         localValue: defaultFn(),
       }
     },
+    computed: {
+      isSynced() {
+        const synced = isEqual(this.value, this.localValue)
+        return synced
+      },
+    },
     watch: {
       value: {
         handler(newValue) {
-          this.localValue = needReset(newValue) ? defaultFn() : newValue
+          this.localValue = needReset(newValue)
+            ? defaultFn()
+            : isEqual(this.localValue, newValue)
+            ? this.localValue
+            : cloneDeep(newValue)
         },
         immediate: true,
       },
