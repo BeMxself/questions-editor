@@ -57,11 +57,13 @@ export default {
 <style scoped>
 .group > .header {
   background-color: silver;
-  margin: auto -10px;
-  margin-bottom: 15px;
+  margin: auto 0px;
+  margin-bottom: 10px;
 }
 .group > .children {
-  background-color: white;
+  background-color: #fff8;
+  padding: 0.1px 0 15px;
   width: 100%;
+  border-radius: 6px;
 }
 </style>

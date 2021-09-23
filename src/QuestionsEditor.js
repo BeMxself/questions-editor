@@ -17,6 +17,28 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      selected: null,
+    }
+  },
+  computed: {
+    current() {
+      return { root: this.localValue, current: this.selected }
+    },
+  },
+  watch: {
+    current: {
+      handler(v) {
+        var selected =
+          !v.current || v.current === v.root
+            ? { isRoot: true, children: v.root }
+            : v.current
+        this.$emit('selected', selected)
+      },
+      immediate: true,
+    },
+  },
   methods: {
     // 标准化问题定义数据（清理不必要的属性，补齐缺少的必填属性）
     normalizeQuestion(q, define) {
@@ -115,7 +137,7 @@ export default {
       ]
     },
 
-    // 渲染多个问题
+    // 渲染一个问题
     renderQuestion(q, h, context) {
       const { type, ...props } = q
       const define = getEditorDefine(type)
@@ -125,7 +147,15 @@ export default {
         EditorWrapper,
         {
           class: this.readonly ? 'ignore-sort' : '',
+          style: this.selected === q ? 'background: #00aaff20' : '',
           props: { value: props, readonly: this.readonly },
+          on: {
+            click: (e) => {
+              if (!define.isContainer) return
+              this.selected = q
+              e.stopPropagation()
+            },
+          },
         },
         [
           h(
@@ -152,7 +182,13 @@ export default {
     renderAddButton(q, h) {
       return h(
         'div',
-        { style: { display: 'flex', justifyContent: 'center' } },
+        {
+          style: {
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '15px',
+          },
+        },
         [
           h('el-button', {
             props: {
@@ -182,17 +218,38 @@ export default {
         })
       )
     },
+
+    // 增加问题
+    appendQuestion(question) {
+      const parent =
+        this.selected === this.localValue || !this.selected
+          ? { children: this.localValue }
+          : this.selected
+      if (!parent.children) return
+      parent.children.push(question)
+    },
   },
   render(h) {
+    const root = { children: this.localValue, isRoot: true }
     return h(
       'div',
       {
         class: 'questions',
+        style: {
+          padding: '1px 0 15px',
+          borderRadius: '6px',
+          background: this.selected === this.localValue ? '#00aaff20' : '',
+        },
         ref: 'questionsContainer',
+        on: {
+          click: () => {
+            this.selected = this.localValue
+          },
+        },
       },
       [
         ...this.renderQuestions(this.localValue, h),
-        this.renderAddButton({ children: this.localValue, isRoot: true }, h),
+        this.renderAddButton(root, h),
       ]
     )
   },

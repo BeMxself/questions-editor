@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-wrapper">
+  <div class="editor-wrapper" v-on="$listeners">
     <div class="operate-panel">
       <div>
         <el-button
@@ -37,17 +37,19 @@ export default {
       expanded: true,
     }
   },
+  mounted() {},
 }
 </script>
 <style scoped>
 .editor-wrapper {
   display: flex;
   flex-direction: column;
-  margin: 0 5px 15px;
+  margin: 10px;
   padding: 10px;
   border: 1px solid #eee;
   border-radius: 6px;
   box-shadow: 0 0 4px #eee;
+  background: white;
 }
 .editor-wrapper > .operate-panel {
   padding: 5px;

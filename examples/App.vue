@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <h2>多题编辑器</h2>
-    <questions-editor v-model="questions" />
+    <button @click="addQuestion">add Judgement</button>
+    <questions-editor @selected="handleSelected" ref="questions" v-model="questions" />
     <h2>单题编辑器</h2>
     <question-editor :readonly="true" v-model="question" />
     <h2>量表编辑器</h2>
@@ -47,6 +48,14 @@ export default {
       question: {},
       scaleTable: [],
     }
+  },
+  methods: {
+    addQuestion() {
+      this.$refs.questions.appendQuestion({ type: 'Judgement' })
+    },
+    handleSelected(selected) {
+      console.warn(selected)
+    },
   },
 }
 </script>
