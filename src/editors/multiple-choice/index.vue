@@ -72,7 +72,7 @@ export default {
   mixins: [
     LocalValueBindingMixin({
       default: () => cloneDeep(defaultProps),
-      needReset: (v) => !(v && v.options && v.options.length),
+      needReset: (v) => !(v && v.options && v.options.length) && !v.topic,
     }),
     SortableMixin({
       refName: 'optionsContainer',
